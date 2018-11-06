@@ -6,6 +6,7 @@ import math
 import gym
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 # returns maximum value in a dictionary with associated key
 def maxDict(d):
@@ -144,3 +145,15 @@ plt.ylabel("Average Score")
 plt.show()
 
 
+###OUTPUT LEARNED POLICY TO FILE###
+file = open("Policy Simple Q.txt", "w")
+for state in all_states:
+    highest = -float("Inf")
+    for action in Q[state]:
+        if Q[state][action] > highest:
+            highest = Q[state][action]
+            act = action
+        elif Q[state][action] == highest: #If state not visited, tie break with random
+            act = random.randint(0, env.action_space.n - 1)
+    file.write(str(state) + "," + str(act) + "\n") #CSV file: state,action
+file.close()
