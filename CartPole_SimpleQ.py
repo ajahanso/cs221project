@@ -147,6 +147,7 @@ plt.show()
 
 ###OUTPUT LEARNED POLICY TO FILE###
 file = open("Policy Simple Q.txt", "w")
+file.write("s,a") #CSV file: state,action
 for state in all_states:
     highest = -float("Inf")
     for action in Q[state]:
@@ -155,5 +156,5 @@ for state in all_states:
             act = action
         elif Q[state][action] == highest: #If state not visited, tie break with random
             act = random.randint(0, env.action_space.n - 1)
-    file.write(str(state) + "," + str(act) + "\n") #CSV file: state,action
+    file.write("\n" + str(state) + "," + str(act)) #CSV file: state,action
 file.close()
