@@ -1,4 +1,10 @@
 '''
+format for weight vector update and implementation from:
+https://github.com/kvfrans/openai-cartpole
+'''
+
+
+'''
 import math
 import gym
 from gym import spaces, logger
