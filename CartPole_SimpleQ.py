@@ -1,5 +1,8 @@
 '''
 This code implements basic Q-learning for the CartPole_V0 environment
+
+format for discretization and implementation from:
+https://github.com/philtabor/OpenAI-Cartpole
 '''
 
 import math
