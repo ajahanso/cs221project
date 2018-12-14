@@ -1,5 +1,10 @@
 '''
 This code tests a policy in the CartPole_V0 environment
+
+
+format for weight vector update and implementation from:
+https://github.com/kvfrans/openai-cartpole
+
 '''
 
 import math
