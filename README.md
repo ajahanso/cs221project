@@ -28,4 +28,6 @@ MountainCarHillClimbing.py is the same as CartPoleHillClimbing.py except modifie
 
 MountainCarSimulatedAnnealing.py is the same as CartPoleSimulatedAnnealing.py except modified for the MountainCar environment.
 
-PolicyTesting.py is used to test polices of different algorithms. Either a .csv file is imported, or a weight vector is used. cartpole.py and mountain_car.py must be modified for changes to happen in testing using PolicyTesting.py
+For each of these files, we invoked it with the command "python x" where x is any of the algorithm files. If we wanted to save different policies, we would change the name of the file output within the algorithm's code. 
+
+PolicyTesting.py is used to test polices of different algorithms. Either a .csv file is imported, or a weight vector is used. cartpole.py and mountain_car.py must be modified for changes to happen in testing using PolicyTesting.py. To run policy testing, simply use the command python PolicyTesting.py and make sure that the correct file / weight vector is loaded. We manually changed the PolicyTesting.py file each time we wanted to test a different policy file / weight vector.
