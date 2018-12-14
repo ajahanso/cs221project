@@ -11,6 +11,7 @@ cartpole.py and mountain_car.py are copies of the base environments from OpenAI 
 DeepQ_CP.py and ExperimentsDQ.py are the files for creating deep q-learning policies and testing them in the cartpole problem. To use, simply invoke the commands:
 
 python DeepQ_CP.py
+
 python ExperimentsDQ.py
 
 In each file, there is a name field for what the policy trained should be saved as and which policy to load for testing on the environment. Be sure when using them that the saved name and loaded policy match the experiment to be performed. For instance, if the default policy was saved as "DQ-DEF" and you want to test the default policy on an updated cart mass environment, first change the environment as described earlier and then make sure that the "DQ-DEF" file is loaded in ExperimentsDQ.py
