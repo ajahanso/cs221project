@@ -30,6 +30,7 @@ def assign_bins(observation, bins):
     state = [0]*4
     for i in range(4):
         state[i] = np.digitize(observation[i], bins[i])
+    #print(state)
     return state
 
 
@@ -37,6 +38,7 @@ def assign_bins(observation, bins):
 def oneEpisode(bins, Q, eta, gamma, epsilon, animate):
     observation = env.reset() #initialize to semi-random start state
     state = get_state_as_string(assign_bins(observation, bins))
+    #state = observation # FOR TRYING CONTINUOUS
     done = False
     totalReward = 0
     t = 0  # number of time-steps
@@ -52,10 +54,13 @@ def oneEpisode(bins, Q, eta, gamma, epsilon, animate):
 
         observation, reward, done, info = env.step(action) #results of action
         newState = get_state_as_string(assign_bins(observation, bins))
+        #newState = observation  # FOR TRYING CONTINUOUS SPACE
         totalReward += reward
 
-        if done and t < 200:
-            reward = -300 #Harsh penalty for ending before timeout state
+        #weightVec = weightVec - eta*(Q_opt - (reward + discount*V_opt))*observation
+
+        if done and t < 500:
+            reward = -10000 #Harsh penalty for ending before timeout state
 
         newAction, maxQ = maxDict(Q[newState])
 
@@ -63,7 +68,7 @@ def oneEpisode(bins, Q, eta, gamma, epsilon, animate):
         Q[state][action] -= eta * (Q[state][action] - (reward + gamma * maxQ))
         state = newState
         action = newAction
-
+        #Q["0000"][0] = 5000
     env.close()
     return totalReward, t
 
@@ -74,19 +79,24 @@ def oneEpisode(bins, Q, eta, gamma, epsilon, animate):
 ####################################################################################
 
 env = gym.make('CartPole-v0')
+env._max_episode_steps = 500
 
 ###HYPERPARAMETERS###
-maxStates = 10**4  # function of bin discretization
-gamma = 0.9        # discount factor
-eta = 0.01         # step size
-numEpisodes = 500  # episodes to train over
-animate = False    # boolean for showing animation
-
+discrete = 10
+maxStates = discrete**4  # 10**4   # function of bin discretization
+gamma = 1       # discount factor
+eta = 0.003          # step size
+numEpisodes = 5000  # episodes to train over
+animate = False      # boolean for showing animation
+exportFilename = "Q output tau change.txt"
 
 ###INITIALIZE LIST OF ALL POSSIBLE STATES###
 all_states = []
-for i in range(maxStates):
-    all_states.append(str(i).zfill(4))
+for i in range(1, discrete + 1):
+    for j in range(1, discrete + 1):
+        for k in range(1, discrete + 1):
+            for l in range(1, discrete + 1):
+                all_states.append(str(i)+str(j)+str(k)+str(l))
 
 
 ###INITIALIZE Q Dictionary###
@@ -98,19 +108,20 @@ for state in all_states:
 
 
 ###CREATE DISCRETE BINS###
-bins = np.zeros((4, 10))              # 10 discretizations for each variable
-bins[0] = np.linspace(-4.8, 4.8, 10)  # observation[0]: cart position: -4.8 - 4.8
-bins[1] = np.linspace(-5, 5, 10)      # observation[1]: cart velocity: -inf - inf
-bins[2] = np.linspace(-.4, .4, 10)    # observation[2]: pole angle: -41.8 - 41.8
-bins[3] = np.linspace(-5, 5, 10)      # observation[3]: pole velocity: -inf - inf
+bins = np.zeros((4, discrete))              # 10 discretizations for each variable
+bins[0] = np.linspace(-4.8, 4.8, discrete)  # observation[0]: cart position: -4.8 - 4.8
+bins[1] = np.linspace(-5, 5, discrete)      # observation[1]: cart velocity: -inf - inf
+bins[2] = np.linspace(-.4, .4, discrete)    # observation[2]: pole angle: -41.8 - 41.8
+bins[3] = np.linspace(-5, 5, discrete)      # observation[3]: pole velocity: -inf - inf
 
+print(bins)
 
 ###TRAIN & EVALUATE###
 episodeLengths = []
 episodeRewards = []
 iterSolved = 0
 for n in range(numEpisodes):
-    epsilon = 1.0 / np.sqrt(n + 1) # epsilon greedy policy
+    epsilon = 1.0 / np.sqrt(n + 1)  # epsilon greedy policy
 
     episode_reward, episode_length = oneEpisode(bins, Q, eta, gamma, epsilon, animate)
 
@@ -146,7 +157,7 @@ plt.show()
 
 
 ###OUTPUT LEARNED POLICY TO FILE###
-file = open("Policy Simple Q.txt", "w")
+file = open(exportFilename, "w")
 file.write("s,a") #CSV file: state,action
 for state in all_states:
     highest = -float("Inf")
@@ -158,3 +169,35 @@ for state in all_states:
             act = random.randint(0, env.action_space.n - 1)
     file.write("\n" + str(state) + "," + str(act)) #CSV file: state,action
 file.close()
+
+
+'''
+###OUTPUT HEURISTIC POLICY TO FILE###
+file = open("Heuristic Policy.txt", "w")
+file.write("s,a") #CSV file: state,action
+for state in all_states:
+    if int(state[3]) > 4 and int(state[2]) > 4:
+        act = 1
+    elif int(state[3]) < 5 and int(state[2]) < 5:
+        act = 0
+    else:
+        q = random.randint(0,1)
+        if q > 0.2:
+            act = 1
+        else:
+            act = 0
+    file.write("\n" + str(state) + "," + str(act)) #CSV file: state,action
+file.close()
+'''
+
+
+'''
+###OUTPUT RANDOM POLICY TO FILE###
+file = open("Random Policy.txt", "w")
+file.write("s,a") #CSV file: state,action
+for state in all_states:
+    act = random.randint(0, env.action_space.n - 1)
+    file.write("\n" + str(state) + "," + str(act)) #CSV file: state,action
+file.close()
+'''
+
